@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Perfect Sheets — A Lifestyle Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family… rel="stylesheet">
+<style>
+  :root {
+    --cream:      #FFF8F0;
+    --ink:        #2B2B2B;
+    --ink-soft:   #6B6560;
+    --dawn:       #F6C6B4;
+    --sky:        #A9CBE8;
+    --dusk:       #6B5B95;
+    --gold:       #E3A857;
+    --card-shadow: 0 20px 60px -20px rgba(43,43,43,0.25);
+    --radius: 20px;
+  }
+ 
+  * { box-sizing: border-box; }
+ 
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: 'Work Sans', sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+  }
+ 
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: linear-gradient(180deg, var(--cream) 55%, color-mix(in srgb, var(--dawn) calc(100% - (var(--progress, 0) * 100%)), var(--dusk) calc(var(--progress, 0) * 100%)) 100%);
+    transition: background 0.6s ease;
+  }
+ 
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+ 
+  .app { width: 100%; max-width: 480px; }
+ 
+  .eyebrow {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: center;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+ 
+  .title {
+    font-family: 'Fraunces', serif;
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 28px;
+    line-height: 1.25;
+  }
+ 
+  .arc-wrap { position: relative; height: 54px; margin-bottom: 8px; }
+  .arc-track { width: 100%; height: 54px; display: block; }
+  .arc-sun {
+    position: absolute;
+    top: 0; left: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--gold) 25%, transparent);
+    transform: translate(-11px, -11px);
+    transition: left 0.5s ease, top 0.5s ease;
+  }
+  .progress-label {
+    text-align: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+ 
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 32px 28px;
+  }
+ 
+  .question {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 6px;
+  }
+  .question-sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+    font-weight: 500;
+  }
+ 
+  .options { display: flex; flex-direction: column; gap: 10px; }
+ 
+  .option {
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #E9E3DA;
+    background: var(--cream);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .option:hover { border-color: var(--gold); }
+  .option:focus-visible { outline: 3px solid var(--dusk); outline-offset: 2px; }
+  .option:active { transform: scale(0.99); }
+  .option.selected {
+    background: color-mix(in srgb, var(--gold) 18%, var(--cream));
+    border-color: var(--gold);
+  }
+  .option.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .check-mark {
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
+    border: 1.5px solid #D8D0C4;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    background: #fff;
+  }
+  .option.selected .check-mark {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #fff;
+  }
+ 
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 26px;
+  }
+ 
+  .btn {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s ease, opacity 0.15s ease;
+  }
+  .btn:focus-visible { outline: 3px solid var(--dusk); outline-offset: 2px; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--ink); color: var(--cream); }
+  .btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink-soft); }
+ 
+  .q-count { font-size: 13px; color: var(--ink-soft); font-weight: 600; }
+ 
+  .center-card {
+    background: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 40px 30px;
+    text-align: center;
+  }
+  .center-card p { color: var(--ink-soft); font-size: 15px; line-height: 1.6; margin: 0 0 26px; }
+ 
+  .result-name {
+    font-family: 'Fraunces', serif;
+    font-size: 30px;
+    font-weight: 700;
+    margin: 8px 0 10px;
+    color: var(--dusk);
+    line-height: 1.3;
+  }
+  .result-desc { font-size: 15px; color: var(--ink-soft); margin-bottom: 28px; line-height: 1.6; }
+ 
+  .hidden { display: none !important; }
+ 
+  footer { text-align: center; font-size: 12px; color: var(--ink-soft); margin-top: 18px; }
+</style>
+</head>
+<body>
+ 
+<div class="app">
+  <div class="eyebrow">A Lifestyle Quiz</div>
+  <h1 class="title">Find Your Perfect Sheets</h1>
+ 
+  <div class="arc-wrap" id="arcWrap">
+    <svg class="arc-track" viewBox="0 0 400 54" preserveAspectRatio="none">
+      <path d="M 10 44 Q 200 -10 390 44" fill="none" stroke="#E9E3DA" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="arc-sun" id="arcSun"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Question 1 of 5</div>
+ 
+  <div class="center-card" id="startScreen">
+    <p>Answer five quick questions about how you sleep, and we'll match you to the sheet collection that fits you best.</p>
+    <button class="btn btn-primary" id="startBtn">Start the quiz</button>
+  </div>
+ 
+  <div class="card hidden" id="quizScreen">
+    <p class="question" id="questionText"></p>
+    <p class="question-sub" id="questionSub"></p>
+    <div class="options" id="optionsList"></div>
+    <div class="nav-row">
+      <span class="q-count" id="qCount"></span>
+      <button class="btn btn-primary" id="nextBtn" disabled>Next</button>
+    </div>
+  </div>
+ 
+  <div class="center-card hidden" id="resultsScreen">
+    <div class="eyebrow">Your Match</div>
+    <div class="result-name" id="resultName"></div>
+    <div class="result-desc" id="resultDesc"></div>
+    <button class="btn btn-primary" id="retryBtn">Take it again</button>
+  </div>
+ 
+  <footer>Built with a single HTML file — edit the questions and scoring below to make it yours.</footer>
+</div>
+ 
+<script>
+/* ============================================================
+   EDIT ZONE — QUESTIONS
+   Each question has:
+     - type: "single" (pick one) or "multi" (pick several)
+     - maxSelect: for "multi" questions, the most options a person can pick (omit for unlimited)
+     - options: each has a label and "points" — how much it adds to each
+       sheet category: cooling, luxury, cozy, organic
+   ============================================================ */
+const QUESTIONS = [
+  {
+    question: "How do you usually sleep?",
+    sub: "Most important — pick one",
+    type: "single",
+    options: [
+      { label: "I often wake up feeling too hot", points: { cooling: 3 } },
+      { label: "I usually sleep comfortably", points: { luxury: 3 } },
+      { label: "I often feel cold at night", points: { cozy: 3 } }
+    ]
+  },
+  {
+    question: "Which texture sounds most like your ideal sheets?",
+    sub: "Pick one",
+    type: "single",
+    options: [
+      { label: "Crisp & Cool", points: { cooling: 2 } },
+      { label: "Silky & Smooth", points: { luxury: 2 } },
+      { label: "Soft & Cozy", points: { cozy: 2 } },
+      { label: "Light & Airy", points: { organic: 2 } }
+    ]
+  },
+  {
+    question: "What bothers you most about your current sheets?",
+    sub: "Select all that apply",
+    type: "multi",
+    options: [
+      { label: "Sleeping hot", points: { cooling: 1 } },
+      { label: "Pilling", points: { luxury: 1 } },
+      { label: "Doesn't stay on the mattress", points: { luxury: 1 } },
+      { label: "Doesn't look crisp", points: { cooling: 1 } },
+      { label: "Doesn't feel luxurious", points: { luxury: 1 } },
+      { label: "Fades after washing", points: { luxury: 1 } },
+      { label: "Too noisy when moving", points: { luxury: 1 } },
+      { label: "Doesn't feel sustainably made", points: { organic: 1 } },
+      { label: "Poor value for money", points: {} },
+      { label: "Other", points: {} }
+    ]
+  },
+  {
+    question: "When you buy premium sheets, what matters most?",
+    sub: "Choose up to 3",
+    type: "multi",
+    maxSelect: 3,
+    options: [
+      { label: "Cooling", points: { cooling: 2 } },
+      { label: "Breathability", points: { cooling: 1 } },
+      { label: "Softness", points: { cozy: 1, luxury: 1 } },
+      { label: "Durability", points: { luxury: 1 } },
+      { label: "Luxury feel", points: { luxury: 2 } },
+      { label: "Sustainability", points: { organic: 2 } },
+      { label: "Easy care", points: { cooling: 1 } },
+      { label: "Hypoallergenic", points: { organic: 1 } }
+    ]
+  },
+  {
+    question: "Which bed would you be most excited to sleep in?",
+    sub: "Pick one",
+    type: "single",
+    options: [
+      { label: "Warm & Cozy", points: { cozy: 2 } },
+      { label: "Luxury hotel-like", points: { luxury: 2 } },
+      { label: "Calm & Cool", points: { cooling: 2 } },
+      { label: "Soft & Relaxing", points: { cozy: 1, luxury: 1 } },
+      { label: "Natural & Organic", points: { organic: 2 } },
+      { label: "Fresh & Minimal", points: { cooling: 1, organic: 1 } }
+    ]
+  }
+];
+ 
+/* ============================================================
+   EDIT ZONE — RESULTS
+   The category with the highest total points wins. The "second"
+   category can refine the match for a more specific recommendation.
+   ============================================================ */
+const RESULTS = {
+  cooling: { name: "Cooling Percale or Bamboo", desc: "Crisp, breathable, and made to keep you cool all night long." },
+  premiumSateen: { name: "Premium Sateen Cotton", desc: "Silky-smooth with a subtle sheen — hotel-style luxury for every night." },
+  cozy: { name: "Brushed Cotton or Flannel", desc: "Warm, soft, and cozy — built for chilly nights and slow mornings." },
+  organic: { name: "Organic Cotton Percale", desc: "Naturally made, breathable, and gentle — better for sensitive skin and the planet." },
+  egyptianSateen: { name: "Egyptian Cotton Sateen", desc: "The ultimate blend of softness and luxury, for a truly indulgent sleep." }
+};
+ 
+function pickResult(scores) {
+  const entries = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const [topCat, topScore] = entries[0];
+  const [secondCat, secondScore] = entries[1] || ["", 0];
+  const secondIsClose = topScore > 0 && secondScore >= topScore * 0.6;
+ 
+  if (topCat === "cooling") {
+    return secondCat === "organic" && secondIsClose ? RESULTS.organic : RESULTS.cooling;
+  }
+  if (topCat === "luxury") {
+    return secondCat === "cozy" && secondIsClose ? RESULTS.egyptianSateen : RESULTS.premiumSateen;
+  }
+  if (topCat === "cozy") return RESULTS.cozy;
+  if (topCat === "organic") return RESULTS.organic;
+  return RESULTS.premiumSateen; // fallback
+}
+ 
+/* ============================================================
+   APP LOGIC — no need to edit below this line
+   ============================================================ */
+let current = 0;
+let selections = []; // array of arrays: selections[qIndex] = [optionIndex, ...]
+const scores = { cooling: 0, luxury: 0, cozy: 0, organic: 0 };
+ 
+const startScreen = document.getElementById('startScreen');
+const quizScreen = document.getElementById('quizScreen');
+const resultsScreen = document.getElementById('resultsScreen');
+const questionText = document.getElementById('questionText');
+const questionSub = document.getElementById('questionSub');
+const optionsList = document.getElementById('optionsList');
+const nextBtn = document.getElementById('nextBtn');
+const qCount = document.getElementById('qCount');
+const progressLabel = document.getElementById('progressLabel');
+const arcSun = document.getElementById('arcSun');
+const resultName = document.getElementById('resultName');
+const resultDesc = document.getElementById('resultDesc');
+ 
+document.getElementById('startBtn').addEventListener('click', () => {
+  startScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  renderQuestion();
+});
+ 
+document.getElementById('retryBtn').addEventListener('click', () => {
+  current = 0;
+  selections = [];
+  scores.cooling = 0; scores.luxury = 0; scores.cozy = 0; scores.organic = 0;
+  resultsScreen.classList.add('hidden');
+  quizScreen.classList.remove('hidden');
+  renderQuestion();
+});
+ 
+nextBtn.addEventListener('click', () => {
+  applyScoresForCurrentQuestion();
+  current++;
+  if (current < QUESTIONS.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+});
+ 
+function applyScoresForCurrentQuestion() {
+  const q = QUESTIONS[current];
+  const chosen = selections[current] || [];
+  chosen.forEach(i => {
+    const pts = q.options[i].points || {};
+    Object.keys(pts).forEach(cat => { scores[cat] = (scores[cat] || 0) + pts[cat]; });
+  });
+}
+ 
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  if (!selections[current]) selections[current] = [];
+ 
+  questionText.textContent = q.question;
+  questionSub.textContent = q.sub || "";
+  qCount.textContent = `Question ${current + 1} of ${QUESTIONS.length}`;
+  progressLabel.textContent = `Question ${current + 1} of ${QUESTIONS.length}`;
+  nextBtn.textContent = current === QUESTIONS.length - 1 ? 'See my result' : 'Next';
+  updateNextState();
+ 
+  optionsList.innerHTML = '';
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.type = 'button';
+    btn.innerHTML = `<span class="check-mark">✓</span><span>${opt.label}</span>`;
+    if (selections[current].includes(i)) btn.classList.add('selected');
+    btn.addEventListener('click', () => handleOptionClick(i, btn, q));
+    optionsList.appendChild(btn);
+  });
+ 
+  updateArc();
+}
+ 
+function handleOptionClick(i, btn, q) {
+  const chosen = selections[current];
+  if (q.type === 'single') {
+    selections[current] = [i];
+    document.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+    btn.classList.add('selected');
+  } else {
+    const idx = chosen.indexOf(i);
+    if (idx > -1) {
+      chosen.splice(idx, 1);
+      btn.classList.remove('selected');
+    } else {
+      if (q.maxSelect && chosen.length >= q.maxSelect) return; // limit reached
+      chosen.push(i);
+      btn.classList.add('selected');
+    }
+  }
+  updateNextState();
+  updateOptionDisabledStates(q);
+}
+ 
+function updateOptionDisabledStates(q) {
+  if (q.type !== 'multi' || !q.maxSelect) return;
+  const chosen = selections[current];
+  const atLimit = chosen.length >= q.maxSelect;
+  document.querySelectorAll('.option').forEach((el, i) => {
+    if (!chosen.includes(i)) {
+      el.classList.toggle('disabled', atLimit);
+    }
+  });
+}
+ 
+function updateNextState() {
+  const chosen = selections[current] || [];
+  nextBtn.disabled = chosen.length === 0;
+}
+ 
+function updateArc() {
+  const progress = current / (QUESTIONS.length - 1 || 1);
+  document.body.style.setProperty('--progress', progress);
+  const x = 10 + progress * 380;
+  const y = 44 - Math.sin(progress * Math.PI) * 50;
+  arcSun.style.left = x + 'px';
+  arcSun.style.top = y + 'px';
+}
+ 
+function showResults() {
+  quizScreen.classList.add('hidden');
+  resultsScreen.classList.remove('hidden');
+  progressLabel.textContent = 'Complete';
+  document.body.style.setProperty('--progress', 1);
+  arcSun.style.left = '390px';
+  arcSun.style.top = '44px';
+ 
+  const result = pickResult(scores);
+  resultName.textContent = result.name;
+  resultDesc.textContent = result.desc;
+}
+ 
+updateArc();
+</script>
+ 
+</body>
+</html>
